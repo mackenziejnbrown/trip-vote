@@ -20,8 +20,6 @@
     --gold: #C8A96E;
     --gold-dim: rgba(200,169,110,0.12);
     --cream: #F0E6D3;
-    --cream-dim: #A89880;
-    --green: #5A7A5C;
     --green-light: rgba(90,122,92,0.2);
     --text: #F0E6D3;
     --text-muted: #8A7A68;
@@ -29,436 +27,161 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* HEADER */
-  header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 3.5rem 2rem 3rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 600px; height: 120px;
-    background: radial-gradient(ellipse at center bottom, rgba(232,129,58,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .header-eyebrow {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--ember);
-    margin-bottom: 12px;
-    font-weight: 500;
-  }
-  header h1 {
-    font-family: 'Lora', serif;
-    font-size: clamp(30px, 6vw, 48px);
-    font-weight: 600;
-    color: var(--cream);
-    letter-spacing: -0.5px;
-    margin-bottom: 10px;
-    line-height: 1.2;
-  }
-  header p {
-    font-size: 15px;
-    font-weight: 300;
-    color: var(--text-muted);
-    letter-spacing: 0.3px;
-  }
+  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 3.5rem 2rem 3rem; text-align: center; position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 120px; background: radial-gradient(ellipse at center bottom, rgba(232,129,58,0.12) 0%, transparent 70%); pointer-events: none; }
+  .header-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--ember); margin-bottom: 12px; font-weight: 500; }
+  header h1 { font-family: 'Lora', serif; font-size: clamp(30px, 6vw, 48px); font-weight: 600; color: var(--cream); letter-spacing: -0.5px; margin-bottom: 10px; line-height: 1.2; }
+  header p { font-size: 15px; font-weight: 300; color: var(--text-muted); }
 
-  /* TABS */
-  .tabs {
-    display: flex;
-    justify-content: center;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 200;
-  }
-  .tab {
-    padding: 15px 32px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
+  .tabs { display: flex; justify-content: center; background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 200; }
+  .tab { padding: 15px 32px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
   .tab:hover { color: var(--cream); }
   .tab.active { color: var(--ember); border-bottom-color: var(--ember); }
+  .tab.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  .tab.locked::after { content: ' 🔒'; font-size: 11px; }
 
   main { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
   .section { display: none; }
   .section.active { display: block; }
 
-  /* PLACES GRID */
-  .places-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-    gap: 1.5rem;
-    margin-top: 0.5rem;
-  }
+  /* ---- PLACES ---- */
+  .places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+  .place-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; transition: transform 0.25s, border-color 0.25s; }
+  .place-card:hover { transform: translateY(-3px); border-color: var(--border2); }
 
-  .place-card {
-    background: var(--surface);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    transition: transform 0.25s, border-color 0.25s;
-  }
-  .place-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--border2);
-  }
+  .photo-swiper { position: relative; width: 100%; height: 210px; overflow: hidden; background: var(--bg3); }
+  .photo-track { display: flex; height: 100%; transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .photo-slide { min-width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+  .photo-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; pointer-events: none; }
+  .photo-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.35); transition: background 0.2s, transform 0.2s; }
+  .photo-dot.active { background: white; transform: scale(1.2); }
+  .photo-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; backdrop-filter: blur(4px); z-index: 2; padding: 0; line-height: 1; }
+  .photo-arrow:hover { background: rgba(0,0,0,0.75); }
+  .photo-arrow.prev { left: 8px; }
+  .photo-arrow.next { right: 8px; }
+  .photo-arrow.hidden { display: none; }
+  .distance-badge { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.55); border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85); backdrop-filter: blur(4px); pointer-events: none; }
 
-  /* PHOTO SWIPER */
-  .photo-swiper {
-    position: relative;
-    width: 100%;
-    height: 210px;
-    overflow: hidden;
-    background: var(--bg3);
-    cursor: grab;
-    user-select: none;
-  }
-  .photo-swiper:active { cursor: grabbing; }
-  .photo-track {
-    display: flex;
-    height: 100%;
-    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: transform;
-  }
-  .photo-slide {
-    min-width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-    display: block;
-  }
-  .photo-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 5px;
-  }
-  .photo-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.35);
-    transition: background 0.2s, transform 0.2s;
-  }
-  .photo-dot.active {
-    background: white;
-    transform: scale(1.2);
-  }
-  .swipe-hint {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 20px;
-    padding: 3px 8px;
-    font-size: 10px;
-    color: rgba(255,255,255,0.7);
-    pointer-events: none;
-    backdrop-filter: blur(4px);
-  }
-
-  /* CARD BODY */
   .card-body { padding: 1.25rem 1.25rem 1rem; }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .card-region {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    color: var(--ember);
-  }
-  .cancel-tag {
-    font-size: 10px;
-    font-weight: 500;
-    padding: 3px 8px;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .cancel-tag.free { background: var(--green-light); color: #8ABD8C; border: 1px solid rgba(90,122,92,0.3); }
-
-  .card-title {
-    font-family: 'Lora', serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--cream);
-    margin-bottom: 12px;
-    line-height: 1.35;
-  }
-
-  .card-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-  .pill {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-  .pill.feature {
-    background: var(--gold-dim);
-    border-color: rgba(200,169,110,0.2);
-    color: var(--gold);
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-    margin-top: 4px;
-  }
-  .card-price {
-    font-size: 19px;
-    font-weight: 500;
-    color: var(--cream);
-  }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .card-region { font-size: 10px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; color: var(--ember); }
+  .cancel-tag { font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; background: var(--green-light); color: #8ABD8C; border: 1px solid rgba(90,122,92,0.3); }
+  .card-title { font-family: 'Lora', serif; font-size: 17px; font-weight: 600; color: var(--cream); margin-bottom: 12px; line-height: 1.35; }
+  .card-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; color: var(--text-muted); }
+  .pill.feature { background: var(--gold-dim); border-color: rgba(200,169,110,0.2); color: var(--gold); }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+  .card-price { font-size: 19px; font-weight: 500; color: var(--cream); }
   .card-price span { font-size: 12px; font-weight: 300; color: var(--text-muted); }
-  .card-link {
-    font-size: 12px;
-    color: var(--ember);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 6px 14px;
-    border: 1px solid rgba(232,129,58,0.35);
-    border-radius: 8px;
-    transition: all 0.15s;
-    letter-spacing: 0.3px;
-  }
+  .card-link { font-size: 12px; color: var(--ember); text-decoration: none; font-weight: 500; padding: 6px 14px; border: 1px solid rgba(232,129,58,0.35); border-radius: 8px; transition: all 0.15s; }
   .card-link:hover { background: var(--ember-dim); border-color: var(--ember); }
 
-  /* DISTANCE BADGE on swiper */
-  .distance-badge {
-    position: absolute;
-    bottom: 10px; left: 10px;
-    background: rgba(0,0,0,0.55);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.85);
-    backdrop-filter: blur(4px);
-    pointer-events: none;
-  }
+  /* MAP */
+  .map-section { margin-top: 0.5rem; }
+  .map-section h3 { font-family: 'Lora', serif; font-size: 18px; color: var(--cream); margin-bottom: 1rem; }
+  #map { width: 100%; height: 420px; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
 
-  /* VOTE SECTION */
-  .vote-intro {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .vote-icon {
-    font-size: 28px;
-    line-height: 1;
-    padding-top: 2px;
-  }
-  .vote-intro h3 {
-    font-family: 'Lora', serif;
-    font-size: 16px;
-    color: var(--cream);
-    margin-bottom: 5px;
-  }
+  /* ---- VOTE ---- */
+  .vote-intro { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; display: flex; gap: 16px; align-items: flex-start; }
+  .vote-icon { font-size: 28px; line-height: 1; padding-top: 2px; }
+  .vote-intro h3 { font-family: 'Lora', serif; font-size: 16px; color: var(--cream); margin-bottom: 5px; }
   .vote-intro p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 1.5rem 0 0.75rem;
-  }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin: 1.5rem 0 0.75rem; }
 
-  .rank-slots {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 10px;
-    margin-bottom: 0.5rem;
-  }
+  /* RANK SLOTS */
+  .rank-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 0.5rem; }
   .rank-slot {
     background: var(--surface);
-    border: 1.5px dashed var(--border2);
+    border: 2px dashed var(--border2);
     border-radius: 14px;
-    padding: 1rem 1.25rem;
-    min-height: 80px;
+    min-height: 110px;
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 12px;
     position: relative;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
   }
+  .rank-slot.drag-over { border-style: solid; border-color: var(--ember); background: rgba(232,129,58,0.1); transform: scale(1.02); }
   .rank-slot.filled { border-style: solid; }
   .rank-slot[data-rank="1"].filled { border-color: var(--ember); background: rgba(232,129,58,0.08); }
   .rank-slot[data-rank="2"].filled { border-color: var(--gold); background: rgba(200,169,110,0.08); }
-  .rank-slot[data-rank="3"].filled { border-color: var(--text-dim); background: rgba(90,78,66,0.3); }
+  .rank-slot[data-rank="3"].filled { border-color: var(--text-dim); background: rgba(90,78,66,0.25); }
 
-  .rank-badge {
-    width: 34px; height: 34px; min-width: 34px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 600; font-size: 15px;
-  }
+  .rank-badge { width: 30px; height: 30px; min-width: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
   .rank-slot[data-rank="1"] .rank-badge { background: var(--ember); color: white; }
   .rank-slot[data-rank="2"] .rank-badge { background: var(--gold); color: #1C1712; }
   .rank-slot[data-rank="3"] .rank-badge { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border2); }
 
-  .slot-name { font-size: 13px; color: var(--text-muted); }
-  .slot-name.filled { font-size: 14px; color: var(--cream); font-weight: 500; }
-  .slot-pts { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .slot-thumb { width: 52px; height: 52px; min-width: 52px; border-radius: 8px; object-fit: cover; }
+  .slot-text .slot-name { font-size: 13px; color: var(--text-muted); line-height: 1.3; }
+  .slot-text .slot-name.filled { font-size: 13px; color: var(--cream); font-weight: 500; }
+  .slot-pts { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
 
-  .clear-btn {
-    position: absolute; top: 9px; right: 9px;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    border: none; cursor: pointer;
-    color: var(--text-muted);
-    font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s;
-  }
-  .clear-btn:hover { background: rgba(255,255,255,0.12); }
+  .clear-btn { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; cursor: pointer; color: var(--text-muted); font-size: 12px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .clear-btn:hover { background: rgba(255,255,255,0.15); }
 
-  .choices-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 8px;
-    margin-top: 0.5rem;
-  }
-  .choice-btn {
+  /* CHOICE CARDS */
+  .choices-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 0.5rem; }
+
+  .choice-card {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 11px 14px;
-    cursor: pointer;
-    text-align: left;
+    overflow: hidden;
+    cursor: grab;
     transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
+    user-select: none;
+    position: relative;
   }
-  .choice-btn:hover:not(:disabled) {
-    border-color: var(--border2);
-    background: var(--surface2);
-  }
-  .choice-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .choice-num {
-    width: 26px; height: 26px; min-width: 26px;
-    border-radius: 7px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600; color: var(--text-muted);
-  }
-  .choice-region { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ember); font-weight: 500; }
-  .choice-name { font-size: 13px; font-weight: 500; color: var(--cream); margin-top: 1px; line-height: 1.3; }
+  .choice-card:hover:not(.used) { border-color: var(--border2); transform: translateY(-2px); }
+  .choice-card:active { cursor: grabbing; }
+  .choice-card.used { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+  .choice-card.dragging { opacity: 0.4; transform: scale(0.97); }
 
-  .submit-btn {
-    display: block;
+  .choice-thumb {
     width: 100%;
-    max-width: 300px;
-    margin: 2rem auto 0;
-    padding: 14px;
-    background: var(--ember);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    letter-spacing: 0.3px;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
   }
+  .choice-info { padding: 10px 12px; }
+  .choice-region { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ember); font-weight: 500; margin-bottom: 3px; }
+  .choice-name { font-size: 13px; font-weight: 500; color: var(--cream); line-height: 1.3; }
+
+  .choice-hint {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0,0,0,0.55);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    backdrop-filter: blur(4px);
+  }
+
+  /* SUBMIT */
+  .submit-btn { display: block; width: 100%; max-width: 300px; margin: 2rem auto 0; padding: 14px; background: var(--ember); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s, transform 0.1s; letter-spacing: 0.3px; }
   .submit-btn:hover:not(:disabled) { background: var(--ember-light); }
   .submit-btn:active { transform: scale(0.98); }
   .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  .vote-success {
-    background: var(--surface);
-    border: 1px solid rgba(90,122,92,0.3);
-    border-radius: 14px;
-    padding: 2.5rem;
-    text-align: center;
-    margin-top: 1rem;
-  }
-  .vote-success h3 { font-family: 'Lora', serif; font-size: 22px; color: var(--cream); margin-bottom: 8px; }
-  .vote-success p { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .voted-banner { background: var(--surface); border: 1px solid rgba(90,122,92,0.3); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .voted-banner p { font-size: 14px; color: var(--text-muted); }
+  .voted-banner strong { color: var(--cream); }
+  .change-vote-btn { font-size: 13px; color: var(--ember); background: none; border: 1px solid rgba(232,129,58,0.35); border-radius: 8px; padding: 7px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .change-vote-btn:hover { background: var(--ember-dim); }
 
   /* RESULTS */
-  .results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
   .results-header h2 { font-family: 'Lora', serif; font-size: 24px; color: var(--cream); }
-  .vote-badge {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
-  .result-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.1rem 1.5rem;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: border-color 0.2s;
-  }
-  .result-row.leader {
-    border-color: rgba(232,129,58,0.4);
-    background: rgba(232,129,58,0.06);
-  }
+  .vote-badge { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text-muted); }
+  .result-row { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.5rem; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; }
+  .result-row.leader { border-color: rgba(232,129,58,0.4); background: rgba(232,129,58,0.06); }
   .result-pos { width: 30px; min-width: 30px; font-size: 16px; font-weight: 600; color: var(--text-dim); text-align: center; }
   .result-pos.top { color: var(--ember); }
   .result-info { flex: 1; min-width: 0; }
@@ -469,14 +192,13 @@
   .result-row.leader .result-fill { background: var(--ember); }
   .result-pts { font-size: 18px; font-weight: 600; color: var(--cream); min-width: 55px; text-align: right; }
   .result-pts span { font-size: 11px; font-weight: 400; color: var(--text-muted); }
-
   .no-votes { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
   .no-votes p { margin-top: 10px; font-size: 14px; }
 
-  @media (max-width: 600px) {
-    .tab { padding: 12px 18px; font-size: 12px; }
+  @media (max-width: 700px) {
+    .tab { padding: 12px 14px; font-size: 11px; }
     .rank-slots { grid-template-columns: 1fr; }
-    .choices-grid { grid-template-columns: 1fr; }
+    .choices-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   }
 </style>
 </head>
@@ -491,20 +213,31 @@
 <nav class="tabs">
   <div class="tab active" data-section="places">Places</div>
   <div class="tab" data-section="vote">Vote</div>
-  <div class="tab" data-section="results">Results</div>
+  <div class="tab locked" data-section="results" id="resultsTab">Results</div>
 </nav>
 
 <main>
+  <!-- PLACES -->
   <section id="places" class="section active">
     <div class="places-grid" id="placesGrid"></div>
+    <div class="map-section">
+      <h3>Where are they?</h3>
+      <div id="map"></div>
+    </div>
   </section>
 
+  <!-- VOTE -->
   <section id="vote" class="section">
+    <div id="votedBanner" class="voted-banner" style="display:none">
+      <p>✓ <strong>You've already voted.</strong> Drag or click to update your rankings below.</p>
+      <button class="change-vote-btn" id="changeVoteBtn">Change my vote</button>
+    </div>
+
     <div class="vote-intro">
       <div class="vote-icon">🗳️</div>
       <div>
         <h3>Ranked voting</h3>
-        <p>Pick your <strong style="color:var(--cream)">1st, 2nd and 3rd</strong> choice from the options below. 1st choice = 3 pts, 2nd = 2 pts, 3rd = 1 pt. Anonymous — one vote per device.</p>
+        <p><strong style="color:var(--cream)">Drag</strong> a place into a ranking slot, or just <strong style="color:var(--cream)">click</strong> it to fill the next slot. 1st = 3 pts · 2nd = 2 pts · 3rd = 1 pt. Anonymous, one vote per device.</p>
       </div>
     </div>
 
@@ -513,24 +246,24 @@
       <div class="rank-slots">
         <div class="rank-slot" data-rank="1">
           <div class="rank-badge">1</div>
-          <div>
-            <div class="slot-name" id="slot1-label">Choose your 1st choice</div>
+          <div class="slot-text">
+            <div class="slot-name" id="slot1-label">Drop or click a place</div>
             <div class="slot-pts">3 points</div>
           </div>
           <button class="clear-btn" id="clear1" style="display:none" data-clear="1">✕</button>
         </div>
         <div class="rank-slot" data-rank="2">
           <div class="rank-badge">2</div>
-          <div>
-            <div class="slot-name" id="slot2-label">Choose your 2nd choice</div>
+          <div class="slot-text">
+            <div class="slot-name" id="slot2-label">Drop or click a place</div>
             <div class="slot-pts">2 points</div>
           </div>
           <button class="clear-btn" id="clear2" style="display:none" data-clear="2">✕</button>
         </div>
         <div class="rank-slot" data-rank="3">
           <div class="rank-badge">3</div>
-          <div>
-            <div class="slot-name" id="slot3-label">Choose your 3rd choice</div>
+          <div class="slot-text">
+            <div class="slot-name" id="slot3-label">Drop or click a place</div>
             <div class="slot-pts">1 point</div>
           </div>
           <button class="clear-btn" id="clear3" style="display:none" data-clear="3">✕</button>
@@ -541,15 +274,9 @@
       <div class="choices-grid" id="choicesGrid"></div>
       <button class="submit-btn" id="submitBtn" disabled>Submit my vote</button>
     </div>
-
-    <div class="vote-success" id="voteSuccess" style="display:none">
-      <div style="font-size:36px;margin-bottom:12px">🎉</div>
-      <h3>Vote recorded!</h3>
-      <p>Check the results tab to see how it's tracking.</p>
-      <button class="submit-btn" id="goToResults" style="max-width:180px;margin-top:0">See results →</button>
-    </div>
   </section>
 
+  <!-- RESULTS -->
   <section id="results" class="section">
     <div class="results-header">
       <h2>Results</h2>
@@ -561,7 +288,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAFKJ5ZbVXpmNH5PpM1nwo5mohSJPnxUNE",
@@ -576,171 +303,80 @@
   const db = getFirestore(app);
   const votesCol = collection(db, 'votes');
 
-  const places = [
-    {
-      id: 1,
-      region: 'Katikati, Bay of Plenty',
-      name: 'Gorgeous Sea View Country Home',
-      price: 485.87,
-      bedrooms: '4 rooms — king, double bunk, 2× queen',
-      features: ['Spa pool', 'BBQ'],
-      cancel: 'Free cancellation — 1 month',
-      distance: '2h 18m · 174 km',
-      lat: -37.5575676, lng: 175.8453141,
-      link: 'https://www.airbnb.co.nz/rooms/1015388134580259217',
-      photos: [
-        'https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/7e33d5ba-cace-4444-ac96-cb73f370c8b8.jpeg?im_w=1440',
-        'https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/df4e72b3-ee93-4a9d-a5ae-24262e053f99.jpeg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/72d23516-6357-4b86-b7bf-0d7014ea0d5b.jpeg?im_w=720',
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-1015388134580259217/original/3b1a9e84-28bd-4b1a-8814-48da178bbc6e.jpeg?im_w=1440'
-      ]
-    },
-    {
-      id: 2,
-      region: 'Waihi Beach',
-      name: 'Best Enjoyed With Friends — All the Toys',
-      price: 561.67,
-      bedrooms: '4 rooms — 3× queen, 1× twin',
-      features: ['BBQ', 'Games room'],
-      cancel: 'Free cancellation — 1 month',
-      distance: '2h 8m · 160 km',
-      lat: -37.4045126, lng: 175.9374635,
-      link: 'https://www.airbnb.co.nz/rooms/45897398',
-      photos: [
-        'https://a0.muscache.com/im/pictures/a80c929c-0db9-4a09-ad4d-7cd7c35bcaeb.jpg?im_w=1440',
-        'https://a0.muscache.com/im/pictures/f3df8801-44a5-4496-a0c4-335dda6050ed.jpg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/b2c0a16f-4857-4182-b871-ac9cf2a280bd.jpg?im_w=720',
-        'https://a0.muscache.com/im/pictures/b2bf3f2d-0b3c-4c63-9907-e6c3848c6d73.jpg?im_w=720'
-      ]
-    },
-    {
-      id: 3,
-      region: 'Waiheke Island',
-      name: 'Te Toki Luxury Treehouse & Studio',
-      price: 527.67,
-      bedrooms: '3 rooms — 3× queen',
-      features: ['Fireplace', 'BBQ'],
-      cancel: 'Free cancellation — 1 month',
-      distance: 'Ferry from Auckland',
-      lat: -36.7896179, lng: 175.0426714,
-      link: 'https://www.airbnb.co.nz/rooms/1533750647713942665',
-      photos: [
-        'https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/20be186c-9e53-49bb-83e0-0742185b464d.jpeg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/277d6250-a64b-49a7-bbb5-00b3bee93188.jpeg?im_w=720',
-        'https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/10cc9b14-f481-4e5e-bb3c-a424e67d1fd8.jpeg?im_w=720',
-        'https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/4d887b1a-62ac-4eda-a290-82614a1e279c.jpeg?im_w=720'
-      ]
-    },
-    {
-      id: 4,
-      region: 'Tairua, Coromandel',
-      name: 'Tairua Luxury — Hot Tub & Views',
-      price: 584.66,
-      bedrooms: '3 rooms — queen, king, double + bunks',
-      features: ['Fireplace', 'Firepit', 'BBQ', 'Spa'],
-      cancel: 'Free cancellation — 1 day',
-      distance: '2h 6m · 159 km',
-      lat: -37.004151, lng: 175.866634,
-      link: 'https://www.airbnb.co.nz/rooms/5289106',
-      photos: [
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-5289106/original/e7350ab5-ef03-4ca3-bf73-2594fba6481f.jpeg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/af7540a6-074b-4177-a835-711737921063.jpg?im_w=720',
-        'https://a0.muscache.com/im/pictures/miso/Hosting-5289106/original/b13c4c28-9411-4565-938a-77ecba5df8a4.jpeg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/miso/Hosting-5289106/original/2b627b3b-ade1-444c-8c14-e00edac1fad7.jpeg?im_w=1200'
-      ]
-    },
-    {
-      id: 5,
-      region: 'Mangawhai',
-      name: 'Tranquil Rural Escape — Sauna + Ice Bath',
-      price: 420.39,
-      bedrooms: '4 rooms — queen, double bunk, queen, king',
-      features: ['BBQ', 'Sauna', 'Ice Bath'],
-      cancel: 'Free cancellation — 5 days',
-      distance: '1h 22m · 96 km',
-      lat: -36.107607, lng: 174.521159,
-      link: 'https://www.airbnb.co.nz/rooms/1046099501096590941',
-      photos: [
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/5261ab51-f218-4375-9a21-8f128832329b.jpeg?im_w=720',
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/f836374d-6319-40dd-9200-6be6f82c6c82.jpeg?im_w=1200',
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/eb0f7822-0eec-43b7-846e-4779ed936d16.jpeg?im_w=720',
-        'https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/bfd111a5-ff71-4af3-917d-6b29b3d9fb76.jpeg?im_w=720'
-      ]
+  function getDeviceId() {
+    let id = localStorage.getItem('trip_device_id');
+    if (!id) {
+      id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('trip_device_id', id);
     }
+    return id;
+  }
+  const deviceId = getDeviceId();
+
+  const places = [
+    { id: 1, region: 'Katikati, Bay of Plenty', name: 'Gorgeous Sea View Country Home', price: 485.87, bedrooms: '4 rooms — king, double bunk, 2× queen', features: ['Spa pool', 'BBQ'], cancel: 'Free cancellation — 1 month', distance: '2h 18m · 174 km', lat: -37.5575676, lng: 175.8453141, link: 'https://www.airbnb.co.nz/rooms/1015388134580259217', photos: ['https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/7e33d5ba-cace-4444-ac96-cb73f370c8b8.jpeg?im_w=1440','https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/df4e72b3-ee93-4a9d-a5ae-24262e053f99.jpeg?im_w=1200','https://a0.muscache.com/im/pictures/miso/Hosting-1015388134580259217/original/72d23516-6357-4b86-b7bf-0d7014ea0d5b.jpeg?im_w=720','https://a0.muscache.com/im/pictures/hosting/Hosting-1015388134580259217/original/3b1a9e84-28bd-4b1a-8814-48da178bbc6e.jpeg?im_w=1440'] },
+    { id: 2, region: 'Waihi Beach', name: 'Best Enjoyed With Friends — All the Toys', price: 561.67, bedrooms: '4 rooms — 3× queen, 1× twin', features: ['BBQ', 'Games room'], cancel: 'Free cancellation — 1 month', distance: '2h 8m · 160 km', lat: -37.4045126, lng: 175.9374635, link: 'https://www.airbnb.co.nz/rooms/45897398', photos: ['https://a0.muscache.com/im/pictures/a80c929c-0db9-4a09-ad4d-7cd7c35bcaeb.jpg?im_w=1440','https://a0.muscache.com/im/pictures/f3df8801-44a5-4496-a0c4-335dda6050ed.jpg?im_w=1200','https://a0.muscache.com/im/pictures/b2c0a16f-4857-4182-b871-ac9cf2a280bd.jpg?im_w=720','https://a0.muscache.com/im/pictures/b2bf3f2d-0b3c-4c63-9907-e6c3848c6d73.jpg?im_w=720'] },
+    { id: 3, region: 'Waiheke Island', name: 'Te Toki Luxury Treehouse & Studio', price: 527.67, bedrooms: '3 rooms — 3× queen', features: ['Fireplace', 'BBQ'], cancel: 'Free cancellation — 1 month', distance: 'Ferry from Auckland', lat: -36.7896179, lng: 175.0426714, link: 'https://www.airbnb.co.nz/rooms/1533750647713942665', photos: ['https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/20be186c-9e53-49bb-83e0-0742185b464d.jpeg?im_w=1200','https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/277d6250-a64b-49a7-bbb5-00b3bee93188.jpeg?im_w=720','https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/10cc9b14-f481-4e5e-bb3c-a424e67d1fd8.jpeg?im_w=720','https://a0.muscache.com/im/pictures/prohost-api/Hosting-1533750647713942665/original/4d887b1a-62ac-4eda-a290-82614a1e279c.jpeg?im_w=720'] },
+    { id: 4, region: 'Tairua, Coromandel', name: 'Tairua Luxury — Hot Tub & Views', price: 584.66, bedrooms: '3 rooms — queen, king, double + bunks', features: ['Fireplace', 'Firepit', 'BBQ', 'Spa'], cancel: 'Free cancellation — 1 day', distance: '2h 6m · 159 km', lat: -37.004151, lng: 175.866634, link: 'https://www.airbnb.co.nz/rooms/5289106', photos: ['https://a0.muscache.com/im/pictures/hosting/Hosting-5289106/original/e7350ab5-ef03-4ca3-bf73-2594fba6481f.jpeg?im_w=1200','https://a0.muscache.com/im/pictures/af7540a6-074b-4177-a835-711737921063.jpg?im_w=720','https://a0.muscache.com/im/pictures/miso/Hosting-5289106/original/b13c4c28-9411-4565-938a-77ecba5df8a4.jpeg?im_w=1200','https://a0.muscache.com/im/pictures/miso/Hosting-5289106/original/2b627b3b-ade1-444c-8c14-e00edac1fad7.jpeg?im_w=1200'] },
+    { id: 5, region: 'Mangawhai', name: 'Tranquil Rural Escape — Sauna + Ice Bath', price: 420.39, bedrooms: '4 rooms — queen, double bunk, queen, king', features: ['BBQ', 'Sauna', 'Ice Bath'], cancel: 'Free cancellation — 5 days', distance: '1h 22m · 96 km', lat: -36.107607, lng: 174.521159, link: 'https://www.airbnb.co.nz/rooms/1046099501096590941', photos: ['https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/5261ab51-f218-4375-9a21-8f128832329b.jpeg?im_w=720','https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/f836374d-6319-40dd-9200-6be6f82c6c82.jpeg?im_w=1200','https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/eb0f7822-0eec-43b7-846e-4779ed936d16.jpeg?im_w=720','https://a0.muscache.com/im/pictures/hosting/Hosting-1046099501096590941/original/bfd111a5-ff71-4af3-917d-6b29b3d9fb76.jpeg?im_w=720'] }
   ];
 
-  // ---- SWIPER ----
+  // ---- MAP ----
+  function initMap() {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    document.head.appendChild(script);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+    script.onload = () => {
+      const map = L.map('map').setView([-36.9, 175.4], 8);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap © CARTO', maxZoom: 18 }).addTo(map);
+      const icon = L.divIcon({ className: '', html: `<div style="width:28px;height:28px;background:#E8813A;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #F2A05A;box-shadow:0 2px 8px rgba(0,0,0,0.5)"></div>`, iconSize: [28,28], iconAnchor: [14,28], popupAnchor: [0,-30] });
+      places.forEach(p => {
+        L.marker([p.lat, p.lng], { icon }).addTo(map).bindPopup(`<div style="font-family:'DM Sans',sans-serif;min-width:170px"><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#E8813A;margin-bottom:4px">${p.region}</div><div style="font-size:14px;font-weight:600;color:#1C1712;margin-bottom:6px;line-height:1.3">${p.name}</div><div style="font-size:12px;color:#5A4E42">📍 ${p.distance}</div><div style="font-size:12px;color:#5A4E42">💰 $${p.price.toFixed(2)} / night</div></div>`, { maxWidth: 220 });
+      });
+    };
+  }
+
+  // ---- PHOTO SWIPERS ----
   function initSwiper(card, photos) {
     const track = card.querySelector('.photo-track');
     const dots = card.querySelectorAll('.photo-dot');
-    const hint = card.querySelector('.swipe-hint');
+    const prevBtn = card.querySelector('.photo-arrow.prev');
+    const nextBtn = card.querySelector('.photo-arrow.next');
     let current = 0;
-    let startX = 0;
-    let dragging = false;
-    let dragDelta = 0;
-
     function goTo(idx) {
       current = Math.max(0, Math.min(photos.length - 1, idx));
-      track.style.transition = 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)';
       track.style.transform = `translateX(-${current * 100}%)`;
       dots.forEach((d, i) => d.classList.toggle('active', i === current));
-      if (hint) hint.style.display = 'none';
+      prevBtn.classList.toggle('hidden', current === 0);
+      nextBtn.classList.toggle('hidden', current === photos.length - 1);
     }
-
-    const swiper = card.querySelector('.photo-swiper');
-
-    swiper.addEventListener('mousedown', e => { startX = e.clientX; dragging = true; track.style.transition = 'none'; });
-    swiper.addEventListener('mousemove', e => {
-      if (!dragging) return;
-      dragDelta = e.clientX - startX;
-      track.style.transform = `translateX(calc(-${current * 100}% + ${dragDelta}px))`;
-    });
-    swiper.addEventListener('mouseup', () => {
-      if (!dragging) return;
-      dragging = false;
-      if (dragDelta < -40) goTo(current + 1);
-      else if (dragDelta > 40) goTo(current - 1);
-      else goTo(current);
-      dragDelta = 0;
-    });
-    swiper.addEventListener('mouseleave', () => {
-      if (dragging) { dragging = false; goTo(current); dragDelta = 0; }
-    });
-
-    swiper.addEventListener('touchstart', e => { startX = e.touches[0].clientX; track.style.transition = 'none'; }, { passive: true });
-    swiper.addEventListener('touchmove', e => {
-      dragDelta = e.touches[0].clientX - startX;
-      track.style.transform = `translateX(calc(-${current * 100}% + ${dragDelta}px))`;
-    }, { passive: true });
-    swiper.addEventListener('touchend', () => {
-      if (dragDelta < -40) goTo(current + 1);
-      else if (dragDelta > 40) goTo(current - 1);
-      else goTo(current);
-      dragDelta = 0;
-    });
-
+    prevBtn.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1); });
+    nextBtn.addEventListener('click', e => { e.stopPropagation(); goTo(current + 1); });
+    let startX = 0;
+    card.querySelector('.photo-swiper').addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    card.querySelector('.photo-swiper').addEventListener('touchend', e => { const d = e.changedTouches[0].clientX - startX; if (d < -40) goTo(current+1); else if (d > 40) goTo(current-1); });
     goTo(0);
   }
 
-  // ---- PLACES ----
+  // ---- RENDER PLACES ----
   function renderPlaces() {
-    const grid = document.getElementById('placesGrid');
-    grid.innerHTML = places.map(p => `
+    document.getElementById('placesGrid').innerHTML = places.map(p => `
       <div class="place-card" data-id="${p.id}">
         <div class="photo-swiper">
-          <div class="photo-track">
-            ${p.photos.map(url => `<img class="photo-slide" src="${url}" alt="${p.name}" loading="lazy">`).join('')}
-          </div>
+          <div class="photo-track">${p.photos.map(url => `<img class="photo-slide" src="${url}" alt="${p.name}" loading="lazy">`).join('')}</div>
+          <button class="photo-arrow prev hidden">&#8249;</button>
+          <button class="photo-arrow next">&#8250;</button>
           <div class="distance-badge">📍 ${p.distance}</div>
-          <div class="swipe-hint">swipe</div>
-          <div class="photo-dots">
-            ${p.photos.map((_, i) => `<div class="photo-dot${i === 0 ? ' active' : ''}"></div>`).join('')}
-          </div>
+          <div class="photo-dots">${p.photos.map((_,i) => `<div class="photo-dot${i===0?' active':''}"></div>`).join('')}</div>
         </div>
         <div class="card-body">
           <div class="card-top">
             <div class="card-region">${p.region}</div>
-            <div class="cancel-tag free">✓ ${p.cancel}</div>
+            <div class="cancel-tag">✓ ${p.cancel}</div>
           </div>
           <div class="card-title">${p.name}</div>
           <div class="card-pills">
@@ -752,45 +388,79 @@
             <a class="card-link" href="${p.link}" target="_blank">View listing ↗</a>
           </div>
         </div>
-      </div>
-    `).join('');
-
-    document.querySelectorAll('.place-card').forEach(card => {
-      const id = parseInt(card.dataset.id);
-      const place = places.find(p => p.id === id);
-      initSwiper(card, place.photos);
-    });
+      </div>`).join('');
+    document.querySelectorAll('.place-card').forEach(card => initSwiper(card, places.find(p => p.id === parseInt(card.dataset.id)).photos));
+    initMap();
   }
 
-  // ---- VOTE ----
+  // ---- VOTE STATE ----
   let picks = [null, null, null];
+  let dragId = null;
 
   function renderChoices() {
     document.getElementById('choicesGrid').innerHTML = places.map(p => `
-      <button class="choice-btn" ${picks.includes(p.id) ? 'disabled' : ''} data-place-id="${p.id}">
-        <div class="choice-num">${p.id}</div>
-        <div>
+      <div class="choice-card ${picks.includes(p.id) ? 'used' : ''}" data-place-id="${p.id}" draggable="true">
+        <img class="choice-thumb" src="${p.photos[0]}" alt="${p.name}" loading="lazy">
+        <div class="choice-info">
           <div class="choice-region">${p.region.split(',')[0]}</div>
           <div class="choice-name">${p.name}</div>
         </div>
-      </button>
-    `).join('');
+        <div class="choice-hint">drag or click</div>
+      </div>`).join('');
+
+    document.querySelectorAll('.choice-card').forEach(card => {
+      const id = parseInt(card.dataset.placeId);
+
+      // Click to fill next slot
+      card.addEventListener('click', () => {
+        if (picks.includes(id)) return;
+        const next = picks.indexOf(null);
+        if (next === -1) return;
+        picks[next] = id;
+        updateSlots(); renderChoices();
+      });
+
+      // Drag start
+      card.addEventListener('dragstart', e => {
+        if (picks.includes(id)) { e.preventDefault(); return; }
+        dragId = id;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        dragId = null;
+      });
+    });
   }
 
   function updateSlots() {
     for (let i = 1; i <= 3; i++) {
       const id = picks[i - 1];
-      const label = document.getElementById(`slot${i}-label`);
       const slot = document.querySelector(`.rank-slot[data-rank="${i}"]`);
+      const label = document.getElementById(`slot${i}-label`);
       const btn = document.getElementById(`clear${i}`);
+
+      // Remove existing thumb if any
+      const oldThumb = slot.querySelector('.slot-thumb');
+      if (oldThumb) oldThumb.remove();
+
       if (id !== null) {
         const p = places.find(x => x.id === id);
+        // Insert thumb after rank badge
+        const thumb = document.createElement('img');
+        thumb.className = 'slot-thumb';
+        thumb.src = p.photos[0];
+        thumb.alt = p.name;
+        const badge = slot.querySelector('.rank-badge');
+        badge.insertAdjacentElement('afterend', thumb);
+
         label.textContent = p.name;
         label.className = 'slot-name filled';
         slot.classList.add('filled');
         btn.style.display = 'flex';
       } else {
-        label.textContent = `Choose your ${['1st','2nd','3rd'][i-1]} choice`;
+        label.textContent = `Drop or click a place`;
         label.className = 'slot-name';
         slot.classList.remove('filled');
         btn.style.display = 'none';
@@ -803,18 +473,25 @@
     picks[rank - 1] = null;
     picks = picks.filter(x => x !== null);
     while (picks.length < 3) picks.push(null);
-    updateSlots();
-    renderChoices();
+    updateSlots(); renderChoices();
   }
 
-  document.getElementById('choicesGrid').addEventListener('click', e => {
-    const btn = e.target.closest('.choice-btn');
-    if (!btn || btn.disabled) return;
-    const next = picks.indexOf(null);
-    if (next === -1) return;
-    picks[next] = parseInt(btn.dataset.placeId);
-    updateSlots();
-    renderChoices();
+  // Drop targets
+  document.querySelectorAll('.rank-slot').forEach(slot => {
+    const rank = parseInt(slot.dataset.rank);
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      if (dragId === null) return;
+      // If already in another slot, remove it
+      const existing = picks.indexOf(dragId);
+      if (existing !== -1) picks[existing] = null;
+      // If slot already has something, swap or clear
+      picks[rank - 1] = dragId;
+      updateSlots(); renderChoices();
+    });
   });
 
   document.querySelectorAll('.clear-btn').forEach(btn => {
@@ -827,10 +504,10 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
     try {
-      await addDoc(votesCol, { first: picks[0], second: picks[1], third: picks[2], ts: Date.now() });
-      localStorage.setItem('trip_vote_done', '1');
-      document.getElementById('voteForm').style.display = 'none';
-      document.getElementById('voteSuccess').style.display = 'block';
+      await setDoc(doc(db, 'votes', deviceId), { first: picks[0], second: picks[1], third: picks[2], ts: Date.now() });
+      localStorage.setItem('trip_voted', '1');
+      unlockResults();
+      showVotedState();
     } catch(e) {
       btn.disabled = false;
       btn.textContent = 'Submit my vote';
@@ -840,12 +517,29 @@
 
   document.getElementById('submitBtn').addEventListener('click', submitVote);
 
+  document.getElementById('changeVoteBtn').addEventListener('click', () => {
+    picks = [null, null, null];
+    updateSlots(); renderChoices();
+    document.getElementById('votedBanner').style.display = 'none';
+    document.getElementById('submitBtn').textContent = 'Update my vote';
+    document.getElementById('submitBtn').disabled = true;
+  });
+
+  function showVotedState() {
+    document.getElementById('votedBanner').style.display = 'flex';
+    document.getElementById('submitBtn').textContent = 'Update my vote';
+  }
+
+  function unlockResults() {
+    document.getElementById('resultsTab').classList.remove('locked');
+  }
+
   // ---- RESULTS ----
   function renderResults(votes) {
     document.getElementById('voteCountBadge').textContent = `${votes.length} / 6 votes`;
     const content = document.getElementById('resultsContent');
     if (votes.length === 0) {
-      content.innerHTML = `<div class="no-votes"><div style="font-size:36px">🔥</div><p>No votes yet — be the first!</p></div>`;
+      content.innerHTML = `<div class="no-votes"><div style="font-size:36px">🔥</div><p>No votes yet!</p></div>`;
       return;
     }
     const scores = {};
@@ -878,28 +572,23 @@
 
   // ---- TABS ----
   function showSection(id) {
+    if (id === 'results' && document.getElementById('resultsTab').classList.contains('locked')) return;
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelector(`.tab[data-section="${id}"]`).classList.add('active');
-    if (id === 'vote' && localStorage.getItem('trip_vote_done')) {
-      document.getElementById('voteForm').style.display = 'none';
-      document.getElementById('voteSuccess').style.display = 'block';
-    }
   }
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => showSection(tab.dataset.section));
   });
 
-  document.getElementById('goToResults').addEventListener('click', () => showSection('results'));
-
   // ---- INIT ----
   renderPlaces();
   renderChoices();
-  if (localStorage.getItem('trip_vote_done')) {
-    document.getElementById('voteForm').style.display = 'none';
-    document.getElementById('voteSuccess').style.display = 'block';
+  if (localStorage.getItem('trip_voted')) {
+    unlockResults();
+    showVotedState();
   }
 </script>
 </body>
